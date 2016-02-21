@@ -38,6 +38,7 @@ public class ThirdActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent startGameAgain = new Intent(ThirdActivity.this, MainActivity.class);
             startActivity(startGameAgain);
+            finish();
         }
     };
 }

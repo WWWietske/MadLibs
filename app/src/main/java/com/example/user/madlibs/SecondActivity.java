@@ -22,43 +22,41 @@ public class SecondActivity extends AppCompatActivity {
 
     // Use the methods in story by calling story right here
     Story newStory;
+
     Button nextButton;
     EditText enterWordText;
     TextView wordsLeft;
-    int inputWords = 0;
+    int inputWords;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        // Initialize the edittext, textview
-        enterWordText = (EditText) findViewById(R.id.enterWordText);
-        wordsLeft = (TextView) findViewById(R.id.wordsLeft);
-
         // Initialize the button for next word and set OnclickListener
         nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.setOnClickListener(next);
-
-        // Initialize textview for amount of words left
-        wordsLeft = (TextView) findViewById(R.id.numberText);
-        //TODO error, want ding nog niet gezet ofzo
-        //wordsLeft.setText(inputWords);
-
-        // TODO dan hier die classes uit story gebruiken om alles te doen, heuj
 
         // Opening the story file and reading it
         AssetManager am = getAssets();
         InputStream inputText = null;
 
-        // Check for IOException
+        // Check for IOException and open file
         try {
-            inputText = am.open("madlib0_simple.txt");
+            inputText = am.open("madlib3_clothes.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         newStory = new Story(inputText);
+
+        // Initialize edittext for entering wrods and set hint
+        enterWordText = (EditText) findViewById(R.id.enterWordText);
+        enterWordText.setHint(newStory.getNextPlaceholder());
+
+        // Initialize textview for amount of words left
+        wordsLeft = (TextView) findViewById(R.id.numberText);
+        inputWords = newStory.getPlaceholderRemainingCount();
+        wordsLeft.setText("Words left: " + inputWords);
     }
 
     View.OnClickListener next = new View.OnClickListener() {
@@ -68,12 +66,19 @@ public class SecondActivity extends AppCompatActivity {
             newStory.fillInPlaceholder(enterWordText.getText().toString());
             enterWordText.setText("");
 
+            // Change hint and number of words remaining
+            enterWordText.setHint(newStory.getNextPlaceholder());
+            inputWords = newStory.getPlaceholderRemainingCount();
+            wordsLeft.setText("Words left: " + inputWords);
+
             // If all words are filled in use intent to send story to third activity
             if (newStory.isFilledIn()){
                 String story = newStory.toString();
                 Intent intent = new Intent(SecondActivity.this, ThirdActivity.class);
                 intent.putExtra("storyFinished", story);
                 startActivity(intent);
+                // Close activity after using it
+                finish();
             }
         }
     };
