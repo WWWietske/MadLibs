@@ -6,6 +6,7 @@
 package com.example.user.madlibs;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,41 +24,59 @@ public class SecondActivity extends AppCompatActivity {
     Story newStory;
     Button nextButton;
     EditText enterWordText;
-    int inputWords;
+    TextView wordsLeft;
+    int inputWords = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        // Initialize the edittext for entering the words
+        // Initialize the edittext, textview
         enterWordText = (EditText) findViewById(R.id.enterWordText);
+        wordsLeft = (TextView) findViewById(R.id.wordsLeft);
 
-        // Initialize the button for next word and setOnclickListener
+        // Initialize the button for next word and set OnclickListener
         nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.setOnClickListener(next);
+
+        // Initialize textview for amount of words left
+        wordsLeft = (TextView) findViewById(R.id.numberText);
+        //TODO error, want ding nog niet gezet ofzo
+        //wordsLeft.setText(inputWords);
 
         // TODO dan hier die classes uit story gebruiken om alles te doen, heuj
 
         // Opening the story file and reading it
-        Context context = getApplicationContext();
-        AssetManager am = context.getAssets();
+        AssetManager am = getAssets();
         InputStream inputText = null;
 
-        // IOException must be caught
+        // Check for IOException
         try {
             inputText = am.open("madlib0_simple.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         newStory = new Story(inputText);
     }
 
     View.OnClickListener next = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // TODO hier dan ervoor zorgen dat als je op de button klikt het woord doorgestuurd wordt en alles update en edittext leeg
-            // bij laatste woord dan naar 3e activity sturen
+            // Save word into placeholder
+            newStory.fillInPlaceholder(enterWordText.getText().toString());
+            enterWordText.setText("");
+
+            // If all words are filled in use intent to send story to third activity
+            if (newStory.isFilledIn()){
+                String story = newStory.toString();
+                Intent intent = new Intent(SecondActivity.this, ThirdActivity.class);
+                intent.putExtra("storyFinished", story);
+                startActivity(intent);
+            }
         }
     };
+
+
 }

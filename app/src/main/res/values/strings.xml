@@ -5,4 +5,6 @@
     knowing the story. Click on the button below to get started.</string>
     <string name="request">Fill in the words to complete the story!</string>
     <string name="next">Next</string>
+    <string name="words">Words left:</string>
+    <string name="againButton">Try again</string>
 </resources>
